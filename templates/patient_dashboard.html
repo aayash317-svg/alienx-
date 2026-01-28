@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .record {
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        .label {
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Rod_of_Asclepius.svg"
+     class="watermark">
+
+<div class="container">
+    <div style="width: 700px;">
+
+        <div class="quote">Health is Wealth</div>
+
+        <!-- PERSONAL DETAILS -->
+        <div class="section" id="personal">
+            <div class="title">Personal Details</div>
+            <p><span class="label">Name:</span> <span id="name"></span></p>
+            <p><span class="label">Phone:</span> <span id="phone"></span></p>
+            <p><span class="label">Blood Group:</span> <span id="blood"></span></p>
+            <p><span class="label">Emergency Contact:</span> <span id="emergency"></span></p>
+        </div>
+
+        <!-- MEDICAL HISTORY -->
+        <div class="section">
+            <div class="title">Medical History</div>
+            <div id="medical_records"></div>
+        </div>
+
+    </div>
+</div>
+
+<script src="/static/patient.js"></script>
+</body>
+</html>

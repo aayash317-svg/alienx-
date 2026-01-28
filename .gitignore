@@ -1,0 +1,7 @@
+nfc_env/
+__pycache__/
+*.pyc
+*.db
+.env
+utils/secret.key
+

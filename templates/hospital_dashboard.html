@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hospital Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .record {
+            border-top: 1px solid #eee;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            height: 80px;
+        }
+    </style>
+</head>
+
+<body>
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Rod_of_Asclepius.svg"
+     class="watermark">
+
+<div class="container">
+    <div style="width: 800px;">
+
+        <div class="quote">Health is Wealth</div>
+
+        <!-- ADD MEDICAL RECORD -->
+        <div class="section">
+            <h3>Add Medical Record</h3>
+
+            <input id="patient_id" placeholder="Patient ID">
+            <input id="doctor" placeholder="Doctor Name">
+
+            <textarea id="diagnosis" placeholder="Diagnosis"></textarea>
+            <textarea id="treatment" placeholder="Treatment"></textarea>
+
+            <button onclick="addRecord()">Add Record</button>
+        </div>
+
+        <!-- MEDICAL HISTORY -->
+        <div class="section">
+            <h3>Medical History</h3>
+            <div id="records"></div>
+        </div>
+
+    </div>
+</div>
+
+<script src="/static/hospital.js"></script>
+</body>
+</html>

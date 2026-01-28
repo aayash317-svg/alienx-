@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Rod_of_Asclepius.svg"
+     class="watermark">
+
+<div class="container">
+    <div class="card">
+        <div class="quote">Health is Wealth</div>
+
+        <select id="role" class="role">
+            <option value="patient">Patient</option>
+            <option value="hospital">Hospital</option>
+        </select>
+<select id="role" class="role">
+    <option value="patient">Patient</option>
+    <option value="hospital">Hospital</option>
+</select>
+
+<input id="user" placeholder="Phone Number">
+<input id="otp" placeholder="Enter OTP" style="display:none;">
+
+<button id="sendBtn" onclick="sendOTP()">Send OTP</button>
+<button id="verifyBtn" onclick="verifyOTP()" style="display:none;">
+    Verify & Login
+</button>
+
+<script src="/static/otp.js"></script>
+
+    </div>
+</div>
+
+</body>
+</html>

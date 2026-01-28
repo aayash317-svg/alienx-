@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Profile</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        img.qr {
+            width: 220px;
+            margin-top: 15px;
+        }
+        .payload {
+            word-break: break-all;
+            background: #f4f6f8;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Rod_of_Asclepius.svg"
+     class="watermark">
+
+<div class="container">
+    <div style="width: 500px;">
+
+        <div class="quote">Health is Wealth</div>
+
+        <!-- PROFILE -->
+        <div class="section">
+            <h3>My Health Card</h3>
+
+            <p><b>Patient Name:</b> <span id="name">—</span></p>
+
+            <img id="qr" class="qr">
+            <div class="payload" id="payload"></div>
+
+            <p style="margin-top:10px; font-size:14px;">
+                Scan this QR or use NFC in emergencies
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script src="/static/profile.js"></script>
+</body>
+</html>
+

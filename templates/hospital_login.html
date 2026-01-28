@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hospital Login</title>
+    <link rel="stylesheet" href="/static/landing.css">
+</head>
+<body>
+
+<section class="hero">
+    <h1>Hospital Login</h1>
+
+    <input id="id" placeholder="Medical Council ID"><br><br>
+    <input id="pass" type="password" placeholder="Password"><br><br>
+
+    <button onclick="login()">Login</button>
+</section>
+
+<script>
+function login() {
+    fetch("/login/hospital", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            council_id: id.value,
+            password: pass.value
+        })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.error) return alert(d.error);
+        window.location.href = "/hospital/dashboard";
+    });
+}
+</script>
+
+</body>
+</html>
+
