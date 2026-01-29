@@ -1,0 +1,7 @@
+have a healthcare web application with role-based authentication: Patient, Hospital, Insurance, and Admin.
+
+Currently, the left sidebar dashboard is the same for all roles, which is incorrect.
+
+I want the sidebar to be dynamically rendered based on the logged-in user’s role
+
+, not shared.
