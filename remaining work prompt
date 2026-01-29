@@ -1,0 +1,55 @@
+ole & Context: I am a developer working on a medical system project using Next.js and Supabase. I have completed the initial setup, authentication, and the insurance portal. My current focus is to finish the Hospital Portal (Phase 3). Please help me implement the following features, ensuring they integrate with the existing codebase and file structure (e.g., src/app/(dashboard)/hospital/, src/actions).
+
+Tasks to Implement:
+
+    Patient Search & List on Hospital Dashboard:
+
+        On the main hospital dashboard page (src/app/(dashboard)/hospital/page.tsx), create a search bar to find patients by name or ID.
+
+        Below the search bar, display a list of search results. Each item should show basic patient details and be clickable.
+
+    Patient Details View:
+
+        When a patient is selected from the search results, navigate to a new, dedicated page: /hospital/patient/[id].
+
+        This page should fetch and display the patient's full profile and complete medical history (past records, prescriptions, etc.).
+
+    Add Medical Record Functionality:
+
+        On the patient details page (/hospital/patient/[id]), add a form (e.g., in a sidebar or modal) to create a new medical record.
+
+        The form should allow the hospital user to select the record type (e.g., "General Report," "Prescription") and add relevant notes or files.
+
+        Upon submission, this form should save the new record to the database, linked to the patient.
+
+    Server Actions & Audit Logging:
+
+        Implement the necessary Server Actions in src/actions to handle:
+
+            Searching for patients.
+
+            Fetching patient details and history.
+
+            Submitting the new medical record form.
+
+        Crucially, when a new medical record is added, the server action must also create an entry in the Audit Log to track this event for security and compliance.
+
+Verification Steps (After Implementation):
+
+Once the code is generated, I will perform the following steps to verify the functionality:
+
+    Log in as a Hospital user.
+
+    Use the search bar on the dashboard to find a patient.
+
+    Click on a patient from the results to view their details page.
+
+    Use the "Add Medical Record" form to submit a new record (e.g., a "Prescription").
+
+    Log out and then log back in as that specific Patient.
+
+    Navigate to their medical history to confirm the new record is visible.
+
+    (Optional) Check the database to ensure an Audit Log entry was created for the action.
+
+Please generate the code for these components, pages, and server actions, keeping the existing project structure in mind.
