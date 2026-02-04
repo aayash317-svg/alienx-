@@ -1,0 +1,53 @@
+Design a professional insurance department dashboard interface after login.
+
+Style: clean, modern government / enterprise web application UI, minimal, professional, high readability.
+
+Layout:
+- Top horizontal header with insurance department logo on the left
+- Welcome text with user name and role (Insurance Officer)
+- Notification bell icon and logout button on the right
+
+Left sidebar navigation:
+- Dashboard
+- Policy Management
+- Customers
+- Claims
+- Reports & Analytics
+- Settings
+Use simple icons and a light background sidebar
+
+Main content area:
+- Dashboard overview with 4 summary cards:
+  • Active Policies
+  • Pending Claims
+  • Premium Collected
+  • Policies Expiring Soon
+- Cards should have soft shadows, rounded corners, and subtle icons
+
+Below summary cards:
+- Recent Claims table with columns:
+  Claim ID, Customer Name, Policy Type, Status
+- Status badges in green (approved), yellow (pending), red (rejected)
+
+Quick action buttons:
+- Create Policy
+- Register Customer
+- File Claim
+- View Reports
+
+Color theme:
+- White background
+- Light blue and navy accents
+- Soft gray dividers
+- Professional government portal look
+
+Typography:
+- Clean sans-serif font
+- Clear hierarchy for headings and labels
+
+Output:
+- High-resolution web dashboard UI
+- Desktop view
+- Realistic production-ready design
+
+
