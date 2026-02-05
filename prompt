@@ -1,227 +1,282 @@
-ROLE & CONTEXT
+ROLE & SEVERITY
 
-You are a senior backend engineer and system integrator working on an existing Flask-based project called NFC Health ID System.
+You are a principal backend architect and forensic debugger assigned to a critical identity-resolution failure in a production-grade Flask application called NFC Health ID System.
 
-The system already includes:
+This is a high-severity data integrity issue.
 
-Patient records
+You must analyze first, prove the root cause, then fix.
+Do NOT guess.
+Do NOT patch symptoms.
 
-Hospital portal
+🚨 CRITICAL FAILURE DESCRIPTION
 
-Insurance portal
+The system exhibits the following incorrect behavior:
 
-SQLite database
+A patient already exists in the database
 
-QR code generation logic
+Verified by email ID
 
-NFC-ready encrypted ID architecture
+Patient record is present
 
-Role-based access control
+When:
 
-⚠️ This task is an extension and automation, not a rebuild.
+Creating a new insurance policy
 
-🎯 OBJECTIVE
+OR scanning QR / NFC
 
-Whenever a new insurance policy is created, the system must automatically perform the following actions in a single workflow:
+OR resolving patient identity
 
-Create a new policy-specific dataset in the database
+The system responds with:
 
-Generate a unique encrypted identifier for that policy
+“Patient not found”
 
-Automatically generate:
+This happens even though the patient email ID exists in the database.
 
-A QR code
+This indicates a fundamental mismatch in identity resolution logic.
 
-An NFC ID payload
+🧠 CORE PRINCIPLE (DO NOT VIOLATE)
 
-Persist all generated artifacts securely
+In this system:
 
-Link them correctly to:
+Email is NOT the primary identity
 
-The patient
+Patient UUID is the primary identity
 
-The insurance policy
+QR / NFC must resolve → UUID, not email
 
-The insurance company
+Email may exist, but identity resolution may still fail
 
-No manual intervention should be required after clicking “Create Policy”.
+You must audit whether the system violates this principle.
 
-❌ CURRENT LIMITATION
+🔍 MANDATORY FORENSIC ANALYSIS (STEP BY STEP)
 
-At present:
+You MUST analyze all of the following, in this order:
 
-Policies may be created manually
+1️⃣ DATABASE TRUTH VERIFICATION (CRITICAL)
 
-QR/NFC creation (if any) is separate or manual
+You must verify:
 
-No automatic dataset + identity generation is enforced
+Which database file is actually being used at runtime
 
-This must be corrected.
+Whether:
 
-✅ EXPECTED AUTOMATED FLOW
+Patient registration
 
-When an insurance officer clicks “Create Policy”:
+Policy creation
 
-Step 1️⃣ Policy Dataset Creation
+QR/NFC resolution
+are all pointing to the same SQLite DB file
 
-A new policy record is inserted into the database
+Check for:
 
-Each policy must have:
+Relative vs absolute DB paths
 
-A unique policy ID (UUID)
+Multiple DB files accidentally created
 
-Patient reference
+DB re-initialization on app restart
 
-Insurance provider reference
+You must prove that data is not split across DBs.
 
-Policy metadata (type, coverage, dates, status)
+2️⃣ PATIENT IDENTITY MODEL AUDIT
 
-Step 2️⃣ Encrypted Identity Generation
+You must inspect:
 
-Immediately generate a unique encrypted identifier for the policy
+How patients are stored:
 
-Encryption rules:
+patient_id (UUID)
 
-Use strong symmetric encryption (Fernet / AES)
+email
 
-Do NOT expose raw IDs
+phone
 
-This encrypted ID will be the single source of truth for QR + NFC
+How patients are retrieved during:
 
-Step 3️⃣ QR Code Generation (Automatic)
+policy creation
 
-Generate a QR code that contains:
+QR/NFC resolution
 
-The encrypted policy identifier
+You must answer explicitly:
 
-Store:
+Is lookup done by:
 
-QR image file (server side)
+email?
 
-QR metadata in database
+UUID?
 
-QR must be:
+encrypted ID?
 
-Unique per policy
+Is lookup logic consistent everywhere?
 
-Reproducible only via backend
+3️⃣ POLICY CREATION → PATIENT LINKAGE CHECK
 
-Step 4️⃣ NFC ID Generation (Automatic)
+When a new policy is created:
 
-Generate an NFC payload using the same encrypted identifier
+How is the patient identified?
 
-Store:
+Is the policy:
 
-NFC UID / payload string
+Linked to patient_id (UUID)?
 
-Policy linkage
+OR incorrectly linked to email?
 
-NFC generation must be:
+You must detect and fix:
 
-Backend-only
+Any policy creation logic that:
 
-Ready for future mobile NFC writing
+Searches patient by email
 
-For now, NFC can be simulated/stored as text payload
+Fails silently
 
-Step 5️⃣ Atomic Transaction Guarantee
+Continues without valid patient UUID
 
-All above steps must be executed as one atomic operation
+4️⃣ QR / NFC RESOLUTION FLOW AUDIT
 
-If any step fails:
+You must analyze:
 
-Roll back the entire operation
+What exactly is stored inside:
 
-Do NOT leave partial data in DB
+QR code
 
-🔐 SECURITY & INTEGRITY RULES
+NFC payload
 
-QR and NFC must NEVER contain raw IDs
+Confirm:
 
-Only backend may generate encrypted identifiers
+Encrypted value decrypts to patient UUID
 
-Only authorized insurance roles may create policies
+NOT email
 
-Generated QR/NFC must be read-only artifacts
+Verify:
 
-No regeneration without admin permission
+Decryption logic
 
-🗄️ DATABASE REQUIREMENTS
+DB lookup uses UUID, not email
+
+If email is used anywhere here → it is a bug.
+
+5️⃣ STRING NORMALIZATION ERRORS
+
+Check for:
+
+Email case sensitivity issues
+
+Leading/trailing spaces
+
+Different encodings
+
+Inconsistent normalization between:
+
+registration
+
+lookup
+
+policy creation
+
+You must enforce:
+
+Canonical normalization at one single point
+
+6️⃣ TRANSACTION & COMMIT VERIFICATION
+
+Verify:
+
+Patient insert commits successfully
+
+No rollback occurs
+
+No shadow DB transaction exists
+
+Confirm no race conditions or partial writes.
+
+🎯 EXPECTED CORRECT BEHAVIOR (NON-NEGOTIABLE)
+
+After fixing:
+
+If a patient exists:
+
+Policy creation must always succeed
+
+QR/NFC resolution must always find patient
+
+“Patient not found” must occur only if:
+
+Patient truly does not exist
+
+Email existence alone must never cause ambiguity
+
+UUID must be the single source of truth
+
+🔧 REQUIRED CORRECTIONS (ONLY AFTER PROOF)
 
 You must:
 
-Either extend or verify existing tables
+Align all patient resolution logic to UUID
 
-Ensure clear linkage between:
+Ensure:
 
-Patient
+Policy creation uses UUID
 
-Policy
+QR/NFC resolves to UUID
 
-QR record
+Email is used only for UI convenience
 
-NFC record
+Add explicit error logging where lookup fails
 
-Avoid duplicating patient identity unnecessarily
+Remove any fallback logic that masks failures
 
-Use consistent DB connection across all steps
+⚠️ Do NOT auto-create patients
+⚠️ Do NOT silently retry
+⚠️ Do NOT bypass identity validation
 
-🧱 ARCHITECTURE CONSTRAINTS
+🔐 SECURITY & DATA INTEGRITY RULES
 
-Use existing Flask backend
+Never store email inside QR/NFC
 
-Use existing QR generation utilities if present
+Never trust frontend patient identifiers
 
-Add new helper functions only where required
+Backend must enforce identity resolution
 
-Keep logic inside:
+Errors must be explicit and accurate
 
-Insurance policy creation API
+🧱 CONSTRAINTS
 
-Do NOT move this logic to frontend
+Must use existing Flask + SQLite stack
+
+Must preserve architecture
+
+Must not affect hospital / admin logic
+
+Must not introduce new frameworks
 
 🚫 WHAT YOU MUST NOT DO
 
-Do NOT require manual QR/NFC creation
+Do NOT patch UI only
 
-Do NOT expose encryption keys
+Do NOT suppress “patient not found”
 
-Do NOT create QR/NFC on frontend
+Do NOT introduce duplicate patients
 
-Do NOT split this into multiple user actions
+Do NOT loosen validation rules
 
-Do NOT break existing patient or hospital flows
-
-✅ EXPECTED OUTPUT
+✅ EXPECTED OUTPUT FROM YOU
 
 You must provide:
 
-Updated policy-creation backend flow
+Root cause analysis (clear and proven)
 
-Automatic QR generation logic
+Exact point where identity mismatch occurs
 
-Automatic NFC ID generation logic
-
-Database linkage explanation
+Corrected backend logic
 
 Confirmation that:
 
-Creating a policy automatically creates dataset + QR + NFC
+Patient email existing → policy works
 
-No manual steps are required
+QR/NFC resolution never fails incorrectly
 
-Data remains secure and consistent
+Optional: SQL verification commands
 
 FINAL INSTRUCTION
 
-Treat this as a backend automation and identity-generation task.
+This is an identity-consistency repair task, not a feature request.
 
-Focus on:
-
-Correct sequencing
-
-Atomic operations
-
-Security
-
-Maintainability
+Treat this like a production incident post-mortem + fix.
