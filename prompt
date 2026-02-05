@@ -1,0 +1,195 @@
+ROLE & CONTEXT
+
+You are a senior full-stack engineer working on an existing web application called NFC Health ID System.
+
+The system includes:
+
+Multiple portals (Patient, Hospital, Insurance, Admin)
+
+An Insurance Portal UI with sidebar navigation
+
+Flask backend (API + UI routes)
+
+HTML, CSS, JavaScript frontend
+
+⚠️ You must edit and correct the existing implementation, not redesign or rebuild the system.
+
+❌ PROBLEM 1: EMPTY LEFT-SIDE SPACE IN INSURANCE PORTAL
+Observed Behavior
+
+In the Insurance Portal dashboard:
+
+There is a large empty space on the left side
+
+Main content starts too far right
+
+The interface does not occupy the full available width
+
+Sidebar exists, but layout sizing is incorrect
+
+Likely Causes
+
+Incorrect CSS width or margin
+
+Fixed container width (e.g., max-width)
+
+Sidebar grid not aligned with content grid
+
+Wrapper div not using full viewport width
+
+Left padding reserved for unused element
+
+✅ EXPECTED CORRECT BEHAVIOR
+
+Insurance Portal should:
+
+Fully utilize available horizontal screen space
+
+Align sidebar and main content properly
+
+Remove unnecessary left margins / gaps
+
+The dashboard should feel full-width and balanced
+
+No empty dead space on the left side
+
+🔧 REQUIRED CORRECTIONS (LAYOUT)
+
+You must:
+
+Inspect existing Insurance Portal layout:
+
+HTML structure
+
+CSS grid / flexbox usage
+
+Sidebar + content container widths
+
+Identify why the left empty space exists
+
+Correct the layout so that:
+
+Sidebar starts at the left edge
+
+Main content expands to fill remaining space
+
+Use:
+
+CSS Flexbox or Grid (existing system)
+
+No new UI frameworks
+
+Apply fix only to Insurance Portal, not globally
+
+❌ PROBLEM 2: SETTINGS PAGE RETURNS 404
+Observed Behavior
+
+Clicking “Settings” in the Insurance Portal:
+
+Redirects to a URL
+
+Server returns 404 Not Found
+
+This breaks navigation and user flow
+
+🔍 Likely Causes
+
+Route exists in frontend but not backend
+
+Missing Flask route
+
+Incorrect URL mapping
+
+Template file missing
+
+Typo mismatch between link and route
+
+✅ EXPECTED CORRECT BEHAVIOR
+
+Clicking Settings should:
+
+Load a valid Settings page
+
+Render a proper UI (even if basic)
+
+No 404 errors should appear
+
+🔧 REQUIRED CORRECTIONS (ROUTING)
+
+You must:
+
+Identify the exact URL triggered by Settings
+
+Verify backend routing:
+
+Flask UI route exists
+
+Correct render_template() usage
+
+If missing:
+
+Create a minimal Settings page template
+
+Add a proper Flask route
+
+Ensure:
+
+Route path matches frontend link
+
+No conflict with API routes
+
+Keep implementation minimal and consistent
+
+🧱 CONSTRAINTS
+
+Do NOT redesign the Insurance Portal
+
+Do NOT change other portals (Patient / Hospital)
+
+Do NOT introduce new frameworks
+
+Use existing HTML, CSS, JS, Flask structure
+
+Make targeted, minimal corrections only
+
+🚫 WHAT YOU MUST NOT DO
+
+Do NOT remove sidebar
+
+Do NOT hardcode screen widths
+
+Do NOT ignore routing errors
+
+Do NOT silence 404s without fixing routes
+
+Do NOT modify backend APIs unnecessarily
+
+✅ EXPECTED OUTPUT
+
+You must provide:
+
+Explanation of why the left empty space existed
+
+Corrected layout (HTML/CSS)
+
+Working Settings route
+
+Settings page template (even if basic)
+
+Confirmation that:
+
+Insurance dashboard uses full width
+
+Settings page loads without 404
+
+FINAL INSTRUCTION
+
+Treat this as a UI layout + navigation bug-fix task, not a redesign.
+
+Focus on:
+
+Visual correctness
+
+Route correctness
+
+Minimal impact on existing system
