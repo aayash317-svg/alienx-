@@ -1,195 +1,227 @@
 ROLE & CONTEXT
 
-You are a senior full-stack engineer working on an existing web application called NFC Health ID System.
+You are a senior backend engineer and system integrator working on an existing Flask-based project called NFC Health ID System.
 
-The system includes:
+The system already includes:
 
-Multiple portals (Patient, Hospital, Insurance, Admin)
+Patient records
 
-An Insurance Portal UI with sidebar navigation
+Hospital portal
 
-Flask backend (API + UI routes)
+Insurance portal
 
-HTML, CSS, JavaScript frontend
+SQLite database
 
-⚠️ You must edit and correct the existing implementation, not redesign or rebuild the system.
+QR code generation logic
 
-❌ PROBLEM 1: EMPTY LEFT-SIDE SPACE IN INSURANCE PORTAL
-Observed Behavior
+NFC-ready encrypted ID architecture
 
-In the Insurance Portal dashboard:
+Role-based access control
 
-There is a large empty space on the left side
+⚠️ This task is an extension and automation, not a rebuild.
 
-Main content starts too far right
+🎯 OBJECTIVE
 
-The interface does not occupy the full available width
+Whenever a new insurance policy is created, the system must automatically perform the following actions in a single workflow:
 
-Sidebar exists, but layout sizing is incorrect
+Create a new policy-specific dataset in the database
 
-Likely Causes
+Generate a unique encrypted identifier for that policy
 
-Incorrect CSS width or margin
+Automatically generate:
 
-Fixed container width (e.g., max-width)
+A QR code
 
-Sidebar grid not aligned with content grid
+An NFC ID payload
 
-Wrapper div not using full viewport width
+Persist all generated artifacts securely
 
-Left padding reserved for unused element
+Link them correctly to:
 
-✅ EXPECTED CORRECT BEHAVIOR
+The patient
 
-Insurance Portal should:
+The insurance policy
 
-Fully utilize available horizontal screen space
+The insurance company
 
-Align sidebar and main content properly
+No manual intervention should be required after clicking “Create Policy”.
 
-Remove unnecessary left margins / gaps
+❌ CURRENT LIMITATION
 
-The dashboard should feel full-width and balanced
+At present:
 
-No empty dead space on the left side
+Policies may be created manually
 
-🔧 REQUIRED CORRECTIONS (LAYOUT)
+QR/NFC creation (if any) is separate or manual
+
+No automatic dataset + identity generation is enforced
+
+This must be corrected.
+
+✅ EXPECTED AUTOMATED FLOW
+
+When an insurance officer clicks “Create Policy”:
+
+Step 1️⃣ Policy Dataset Creation
+
+A new policy record is inserted into the database
+
+Each policy must have:
+
+A unique policy ID (UUID)
+
+Patient reference
+
+Insurance provider reference
+
+Policy metadata (type, coverage, dates, status)
+
+Step 2️⃣ Encrypted Identity Generation
+
+Immediately generate a unique encrypted identifier for the policy
+
+Encryption rules:
+
+Use strong symmetric encryption (Fernet / AES)
+
+Do NOT expose raw IDs
+
+This encrypted ID will be the single source of truth for QR + NFC
+
+Step 3️⃣ QR Code Generation (Automatic)
+
+Generate a QR code that contains:
+
+The encrypted policy identifier
+
+Store:
+
+QR image file (server side)
+
+QR metadata in database
+
+QR must be:
+
+Unique per policy
+
+Reproducible only via backend
+
+Step 4️⃣ NFC ID Generation (Automatic)
+
+Generate an NFC payload using the same encrypted identifier
+
+Store:
+
+NFC UID / payload string
+
+Policy linkage
+
+NFC generation must be:
+
+Backend-only
+
+Ready for future mobile NFC writing
+
+For now, NFC can be simulated/stored as text payload
+
+Step 5️⃣ Atomic Transaction Guarantee
+
+All above steps must be executed as one atomic operation
+
+If any step fails:
+
+Roll back the entire operation
+
+Do NOT leave partial data in DB
+
+🔐 SECURITY & INTEGRITY RULES
+
+QR and NFC must NEVER contain raw IDs
+
+Only backend may generate encrypted identifiers
+
+Only authorized insurance roles may create policies
+
+Generated QR/NFC must be read-only artifacts
+
+No regeneration without admin permission
+
+🗄️ DATABASE REQUIREMENTS
 
 You must:
 
-Inspect existing Insurance Portal layout:
+Either extend or verify existing tables
 
-HTML structure
+Ensure clear linkage between:
 
-CSS grid / flexbox usage
+Patient
 
-Sidebar + content container widths
+Policy
 
-Identify why the left empty space exists
+QR record
 
-Correct the layout so that:
+NFC record
 
-Sidebar starts at the left edge
+Avoid duplicating patient identity unnecessarily
 
-Main content expands to fill remaining space
+Use consistent DB connection across all steps
 
-Use:
+🧱 ARCHITECTURE CONSTRAINTS
 
-CSS Flexbox or Grid (existing system)
+Use existing Flask backend
 
-No new UI frameworks
+Use existing QR generation utilities if present
 
-Apply fix only to Insurance Portal, not globally
+Add new helper functions only where required
 
-❌ PROBLEM 2: SETTINGS PAGE RETURNS 404
-Observed Behavior
+Keep logic inside:
 
-Clicking “Settings” in the Insurance Portal:
+Insurance policy creation API
 
-Redirects to a URL
-
-Server returns 404 Not Found
-
-This breaks navigation and user flow
-
-🔍 Likely Causes
-
-Route exists in frontend but not backend
-
-Missing Flask route
-
-Incorrect URL mapping
-
-Template file missing
-
-Typo mismatch between link and route
-
-✅ EXPECTED CORRECT BEHAVIOR
-
-Clicking Settings should:
-
-Load a valid Settings page
-
-Render a proper UI (even if basic)
-
-No 404 errors should appear
-
-🔧 REQUIRED CORRECTIONS (ROUTING)
-
-You must:
-
-Identify the exact URL triggered by Settings
-
-Verify backend routing:
-
-Flask UI route exists
-
-Correct render_template() usage
-
-If missing:
-
-Create a minimal Settings page template
-
-Add a proper Flask route
-
-Ensure:
-
-Route path matches frontend link
-
-No conflict with API routes
-
-Keep implementation minimal and consistent
-
-🧱 CONSTRAINTS
-
-Do NOT redesign the Insurance Portal
-
-Do NOT change other portals (Patient / Hospital)
-
-Do NOT introduce new frameworks
-
-Use existing HTML, CSS, JS, Flask structure
-
-Make targeted, minimal corrections only
+Do NOT move this logic to frontend
 
 🚫 WHAT YOU MUST NOT DO
 
-Do NOT remove sidebar
+Do NOT require manual QR/NFC creation
 
-Do NOT hardcode screen widths
+Do NOT expose encryption keys
 
-Do NOT ignore routing errors
+Do NOT create QR/NFC on frontend
 
-Do NOT silence 404s without fixing routes
+Do NOT split this into multiple user actions
 
-Do NOT modify backend APIs unnecessarily
+Do NOT break existing patient or hospital flows
 
 ✅ EXPECTED OUTPUT
 
 You must provide:
 
-Explanation of why the left empty space existed
+Updated policy-creation backend flow
 
-Corrected layout (HTML/CSS)
+Automatic QR generation logic
 
-Working Settings route
+Automatic NFC ID generation logic
 
-Settings page template (even if basic)
+Database linkage explanation
 
 Confirmation that:
 
-Insurance dashboard uses full width
+Creating a policy automatically creates dataset + QR + NFC
 
-Settings page loads without 404
+No manual steps are required
+
+Data remains secure and consistent
 
 FINAL INSTRUCTION
 
-Treat this as a UI layout + navigation bug-fix task, not a redesign.
+Treat this as a backend automation and identity-generation task.
 
 Focus on:
 
-Visual correctness
+Correct sequencing
 
-Route correctness
+Atomic operations
 
-Minimal impact on existing system
+Security
+
+Maintainability
