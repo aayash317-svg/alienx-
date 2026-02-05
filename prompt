@@ -1,282 +1,226 @@
-ROLE & SEVERITY
+ROLE & CONTEXT
 
-You are a principal backend architect and forensic debugger assigned to a critical identity-resolution failure in a production-grade Flask application called NFC Health ID System.
+You are a senior backend engineer and system debugger working on an existing Flask-based application called NFC Health ID System.
 
-This is a high-severity data integrity issue.
+The system includes:
 
-You must analyze first, prove the root cause, then fix.
-Do NOT guess.
-Do NOT patch symptoms.
+Patient registration
 
-🚨 CRITICAL FAILURE DESCRIPTION
+Insurance portal
 
-The system exhibits the following incorrect behavior:
+Insurance policy creation flow
 
-A patient already exists in the database
+SQLite database
 
-Verified by email ID
+QR / NFC–based identity architecture
 
-Patient record is present
+⚠️ This task is NOT about adding features.
+It is about analyzing and fixing a critical data-resolution bug.
 
-When:
+🚨 PROBLEM STATEMENT (CRITICAL)
 
-Creating a new insurance policy
+Whenever an insurance officer tries to create a new policy from the Insurance Portal:
 
-OR scanning QR / NFC
+The application returns:
 
-OR resolving patient identity
+“Patient ID not found”
 
-The system responds with:
+This happens even when:
 
-“Patient not found”
+The patient is already registered
 
-This happens even though the patient email ID exists in the database.
+The patient email ID exists in the database
 
-This indicates a fundamental mismatch in identity resolution logic.
+Patient data can be seen elsewhere in the system
 
-🧠 CORE PRINCIPLE (DO NOT VIOLATE)
+This indicates a broken patient-identity resolution during policy creation.
 
-In this system:
+🧠 IMPORTANT SYSTEM PRINCIPLE (DO NOT VIOLATE)
 
-Email is NOT the primary identity
+Patient email is NOT the primary key
 
-Patient UUID is the primary identity
+Patient UUID / patient_id is the primary key
 
-QR / NFC must resolve → UUID, not email
+Policies must always link to patient_id
 
-Email may exist, but identity resolution may still fail
+Email may exist but is not sufficient for identity resolution
 
-You must audit whether the system violates this principle.
+Any logic violating this principle is a bug.
 
-🔍 MANDATORY FORENSIC ANALYSIS (STEP BY STEP)
+🔍 MANDATORY ANALYSIS YOU MUST PERFORM
 
-You MUST analyze all of the following, in this order:
+You must analyze before fixing.
+Do NOT guess or patch blindly.
 
-1️⃣ DATABASE TRUTH VERIFICATION (CRITICAL)
+1️⃣ Verify Database Consistency
 
-You must verify:
-
-Which database file is actually being used at runtime
-
-Whether:
+Confirm:
 
 Patient registration
 
 Policy creation
-
-QR/NFC resolution
-are all pointing to the same SQLite DB file
+use the same SQLite database file
 
 Check for:
+
+Multiple DB paths
+
+DB reinitialization
 
 Relative vs absolute DB paths
 
-Multiple DB files accidentally created
+2️⃣ Inspect Policy Creation Logic
 
-DB re-initialization on app restart
+Identify:
 
-You must prove that data is not split across DBs.
+How patient identity is passed to policy creation
 
-2️⃣ PATIENT IDENTITY MODEL AUDIT
+Whether it uses:
 
-You must inspect:
+email ❌
 
-How patients are stored:
+patient_id (UUID) ✅
 
-patient_id (UUID)
+Detect:
 
-email
+Queries that search by email instead of UUID
 
-phone
+Queries that return no rows but continue execution
 
-How patients are retrieved during:
+3️⃣ Inspect Patient Lookup Query
 
-policy creation
+Examine the SQL query used to fetch patient during policy creation
 
-QR/NFC resolution
+Verify:
 
-You must answer explicitly:
+Correct column name
 
-Is lookup done by:
+Correct WHERE clause
 
-email?
+Correct parameter binding
 
-UUID?
+Ensure:
 
-encrypted ID?
+Failure is explicit
 
-Is lookup logic consistent everywhere?
+No silent fallback
 
-3️⃣ POLICY CREATION → PATIENT LINKAGE CHECK
+4️⃣ Input Normalization Audit
 
-When a new policy is created:
+Check whether:
 
-How is the patient identified?
+Email has leading/trailing spaces
 
-Is the policy:
+Case mismatch exists
 
-Linked to patient_id (UUID)?
+Ensure:
 
-OR incorrectly linked to email?
+Normalization is applied consistently
 
-You must detect and fix:
+But UUID remains the authoritative identifier
 
-Any policy creation logic that:
-
-Searches patient by email
-
-Fails silently
-
-Continues without valid patient UUID
-
-4️⃣ QR / NFC RESOLUTION FLOW AUDIT
-
-You must analyze:
-
-What exactly is stored inside:
-
-QR code
-
-NFC payload
+5️⃣ Transaction & Commit Verification
 
 Confirm:
 
-Encrypted value decrypts to patient UUID
+Patient registration commits successfully
 
-NOT email
+Policy creation reads committed data
 
-Verify:
+Detect:
 
-Decryption logic
+Missing commit()
 
-DB lookup uses UUID, not email
+Connection scope issues
 
-If email is used anywhere here → it is a bug.
-
-5️⃣ STRING NORMALIZATION ERRORS
-
-Check for:
-
-Email case sensitivity issues
-
-Leading/trailing spaces
-
-Different encodings
-
-Inconsistent normalization between:
-
-registration
-
-lookup
-
-policy creation
-
-You must enforce:
-
-Canonical normalization at one single point
-
-6️⃣ TRANSACTION & COMMIT VERIFICATION
-
-Verify:
-
-Patient insert commits successfully
-
-No rollback occurs
-
-No shadow DB transaction exists
-
-Confirm no race conditions or partial writes.
-
-🎯 EXPECTED CORRECT BEHAVIOR (NON-NEGOTIABLE)
+🎯 EXPECTED CORRECT BEHAVIOR
 
 After fixing:
 
 If a patient exists:
 
-Policy creation must always succeed
+Policy creation must succeed
 
-QR/NFC resolution must always find patient
+“Patient ID not found” must occur only if the patient truly does not exist
 
-“Patient not found” must occur only if:
+Policies must:
 
-Patient truly does not exist
+Always reference patient_id
 
-Email existence alone must never cause ambiguity
+Never rely solely on email
 
-UUID must be the single source of truth
+QR / NFC generation must link to the same patient_id
 
-🔧 REQUIRED CORRECTIONS (ONLY AFTER PROOF)
+🔧 REQUIRED CORRECTIONS (ONLY AFTER ANALYSIS)
 
-You must:
+Based on your findings, apply minimal and correct fixes, such as:
 
-Align all patient resolution logic to UUID
+Replace email-based patient lookup with UUID-based lookup
 
-Ensure:
+Ensure policy creation endpoint:
 
-Policy creation uses UUID
+Requires patient_id
 
-QR/NFC resolves to UUID
+Validates its existence
 
-Email is used only for UI convenience
+Fix DB path usage if inconsistent
 
-Add explicit error logging where lookup fails
-
-Remove any fallback logic that masks failures
+Add clear error messages when lookup fails
 
 ⚠️ Do NOT auto-create patients
-⚠️ Do NOT silently retry
-⚠️ Do NOT bypass identity validation
+⚠️ Do NOT suppress the error
+⚠️ Do NOT weaken validation
 
 🔐 SECURITY & DATA INTEGRITY RULES
 
-Never store email inside QR/NFC
+Backend must be the single source of truth
 
-Never trust frontend patient identifiers
+Frontend must not decide patient identity
 
-Backend must enforce identity resolution
+QR / NFC must resolve to patient_id only
 
-Errors must be explicit and accurate
+No duplicate or ghost patient records
 
 🧱 CONSTRAINTS
 
-Must use existing Flask + SQLite stack
+Keep Flask + SQLite stack
 
-Must preserve architecture
+Preserve existing architecture
 
-Must not affect hospital / admin logic
+Do not affect hospital or admin flows
 
-Must not introduce new frameworks
+Make targeted backend corrections only
 
 🚫 WHAT YOU MUST NOT DO
 
-Do NOT patch UI only
+Do NOT hide the error
 
-Do NOT suppress “patient not found”
+Do NOT change unrelated code
 
-Do NOT introduce duplicate patients
+Do NOT use email as a primary key
 
-Do NOT loosen validation rules
+Do NOT bypass identity validation
 
 ✅ EXPECTED OUTPUT FROM YOU
 
 You must provide:
 
-Root cause analysis (clear and proven)
+Root cause explanation (why patient ID not found)
 
-Exact point where identity mismatch occurs
+Exact location of faulty logic
 
-Corrected backend logic
+Corrected backend code
 
 Confirmation that:
 
-Patient email existing → policy works
+Existing patient → policy creation works
 
-QR/NFC resolution never fails incorrectly
+Error appears only for truly missing patients
 
-Optional: SQL verification commands
+Optional SQL verification steps
 
 FINAL INSTRUCTION
 
-This is an identity-consistency repair task, not a feature request.
+Treat this as a data-identity bug, not a UI bug.
 
-Treat this like a production incident post-mortem + fix.
+Fix the cause, not the symptom.
